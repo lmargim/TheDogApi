@@ -1,0 +1,17 @@
+<resources>
+    <string name="default_web_client_id" translatable="false">78909028472-cfcopgjpq9vlnrvd52mjsjgkd92k9qt8.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">358587631615</string>
+    <string name="google_api_key" translatable="false">AIzaSyB-UeJL4p2QnzUYq0LchYaI_ytr_E1Evtw</string>
+    <string name="google_app_id" translatable="false">1:78909028472:android:1d727bd88ef45bf7e7958d</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyB-UeJL4p2QnzUYq0LchYaI_ytr_E1Evtw</string>
+    <string name="google_storage_bucket" translatable="false">thedogapi-458d5.firebasestorage.app</string>
+    <string name="project_id" translatable="false">thedogapi-458d5</string>
+    <string name="app_name">TheDogApi</string>
+    <string name="title_login">TheDogApi</string>
+    <string name="acceder">Acceder</string>
+    <string name="sign_up">Registrarse</string>
+    <string name="forgot_password">Enviar correo de verificacion</string>
+    <string name="olvidado_contrasena">¿Has olvidado tu contraseña?</string>
+    <string name="no_tienes_cuenta">¿Aún no tienes cuenta? Registrate</string>
+    <string name="divisor">-------- otros metodos --------</string>
+</resources>
