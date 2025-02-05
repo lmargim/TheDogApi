@@ -73,8 +73,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun LoginScreen(
     auth: AuthManager,
-    navigateToSignUp: () -> Unit,
     navigateToHome: () -> Unit,
+    navigateToSignUp: () -> Unit,
     navigateToForgotPassword: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
@@ -334,7 +334,7 @@ suspend fun signIn(auth: AuthManager, email: String, passwd: String, context: Co
 
 suspend fun signAnonimously(auth: AuthManager) {
     // Cerramos la sesion antes de iniciar como anonimos
-    // Para evitar posibles intervenciones de la cache del sistema
+//     Para evitar posibles intervenciones de la cache del sistema
     auth.signOut()
     auth.signAnonimously()
 }
