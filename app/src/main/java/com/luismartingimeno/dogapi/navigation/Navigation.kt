@@ -5,15 +5,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.google.firebase.firestore.FirebaseFirestore
 import com.luismartingimeno.dogapi.data.AuthManager
+import com.luismartingimeno.dogapi.data.firebase.FirestoreManager
 import com.luismartingimeno.dogapi.screens.homeScreen.HomeScreen
 import com.luismartingimeno.dogapi.screens.loginScreen.LoginScreen
 import com.luismartingimeno.dogapi.screens.breedDetailScreen.BreedDetailScreen
 import com.luismartingimeno.dogapi.screens.forgotPasswordScreen.ForgotPasswordScreen
 import com.luismartingimeno.dogapi.screens.singUpScreen.SignUpScreen
+import com.luismartingimeno.dogapi.screens.favoritesScreen.FavoritesScreen // Importar la pantalla de favoritos
 
 @Composable
-fun Navegacion(auth: AuthManager) {
+fun Navegacion(auth: AuthManager, firestore: FirebaseFirestore) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Login) {
@@ -57,7 +60,11 @@ fun Navegacion(auth: AuthManager) {
 
         // Pantalla de Home
         composable<Home> { backStackEntry ->
-            HomeScreen(auth,
+            // Crear una instancia de FirestoreManager usando firestore
+            val firestoreManager = FirestoreManager()
+
+            HomeScreen(
+                auth = auth,
                 navigateToLogin = {
                     navController.navigate(Login) {
                         popUpTo(Login) { inclusive = true }
@@ -65,9 +72,14 @@ fun Navegacion(auth: AuthManager) {
                 },
                 navigateToBreedDetail = { breed ->
                     navController.navigate(BreedDetail(breed.id))
-                }
+                },
+                navigateToFavorites = {
+                    navController.navigate(FavoritesScreen)
+                },
+                firestoreManager = firestoreManager  // Pasamos la instancia de FirestoreManager aquí
             )
         }
+
 
         // Pantalla de Detalle de la Raza
         composable<BreedDetail> { backStackEntry ->
@@ -77,6 +89,16 @@ fun Navegacion(auth: AuthManager) {
             ) {
                 navController.popBackStack()
             }
+        }
+
+        // Pantalla de Favoritos
+        composable<FavoritesScreen> {
+            val firestoreManager = FirestoreManager()
+
+            FavoritesScreen(
+                firestoreManager = firestoreManager,
+                navigateBack = { navController.popBackStack() }
+            )
         }
     }
 }

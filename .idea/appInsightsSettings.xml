@@ -9,7 +9,7 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.luismartingimeno.dogapi" />
-                  <option name="mobileSdkAppId" value="1:78909028472:android:1d727bd88ef45bf7e7958d" />
+                  <option name="mobileSdkAppId" value="1:78909028472:android:152b8c38b7b29b53e7958d" />
                   <option name="projectId" value="thedogapi-458d5" />
                   <option name="projectNumber" value="78909028472" />
                 </ConnectionSetting>

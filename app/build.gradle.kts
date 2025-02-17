@@ -79,6 +79,17 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.runtime.livedata)
 
+    //Firestore
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime.android)
+    // trichromelibrary
+    implementation ("com.google.android.gms:play-services-base:17.6.0")
+    implementation ("com.google.android.gms:play-services-auth:19.0.0")
+    implementation ("com.google.android.gms:play-services-location:18.0.0")
+    implementation ("com.google.android.material:material:1.3.0")
+    implementation(libs.androidx.media3.common.ktx)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

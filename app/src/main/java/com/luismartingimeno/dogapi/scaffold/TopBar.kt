@@ -1,25 +1,16 @@
 package com.luismartingimeno.dogapi.scaffold
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -30,7 +21,10 @@ import com.luismartingimeno.dogapi.R
 @Composable
 fun TopBar(
     titulo: String,
-    navigateToLogin: () -> Unit
+    navigateToLogin: () -> Unit,
+    onShowFavorites: () -> Unit,
+    onLogout: () -> Unit,
+    showFavoritesAndLogout: Boolean = true // Nuevo parámetro para controlar la visibilidad
 ) {
     TopAppBar(
         title = {
@@ -57,31 +51,6 @@ fun TopBar(
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.weight(1f)
                 )
-
-//                Box(
-//                    modifier = Modifier
-//                        .padding(end = 12.dp)
-//                        .background(
-//                            color = Color(0xFFE6F1F7),
-//                            shape = RoundedCornerShape(16.dp)
-//                        )
-//                        .border(
-//                            width = 1.5.dp, // Borde delgado
-//                            color = Color(0xFFB0C7D4),
-//                            shape = RoundedCornerShape(16.dp)
-//                        )
-//                        .padding(horizontal = 16.dp, vertical = 10.dp)
-//                ) {
-//                    Text(
-//                        text = "Hola, $nombreUsuario",
-//                        style = MaterialTheme.typography.bodyMedium.copy(
-//                            fontWeight = FontWeight.SemiBold,
-//                            fontSize = 16.sp,
-//                            letterSpacing = 0.5.sp
-//                        ),
-//                        color = Color(0xFF4A4A4A),
-//                    )
-//                }
             }
         },
         navigationIcon = {
@@ -91,6 +60,27 @@ fun TopBar(
                     contentDescription = "Back",
                     modifier = Modifier.size(24.dp)
                 )
+            }
+        },
+        actions = {
+            // Mostrar los iconos de favoritos y logout solo si 'showFavoritesAndLogout' es true
+            if (showFavoritesAndLogout) {
+                IconButton(onClick = onShowFavorites) {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = "Favorites",
+                        modifier = Modifier.size(24.dp),
+                        tint = Color.Yellow
+                    )
+                }
+                IconButton(onClick = onLogout) {
+                    Icon(
+                        imageVector = Icons.Default.ExitToApp,
+                        contentDescription = "Logout",
+                        modifier = Modifier.size(24.dp),
+                        tint = Color.White
+                    )
+                }
             }
         },
         modifier = Modifier.fillMaxWidth(),

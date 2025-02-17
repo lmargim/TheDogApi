@@ -1,5 +1,6 @@
 package com.luismartingimeno.dogapi.screens.homeScreen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -15,6 +16,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.luismartingimeno.dogapi.Screens.HomeScreen.BreedsViewModel
 import com.luismartingimeno.dogapi.data.AuthManager
+import com.luismartingimeno.dogapi.data.firebase.FirestoreManager
 import com.luismartingimeno.dogapi.data.model.DogBreedItem
 import com.luismartingimeno.dogapi.scaffold.TopBar
 
@@ -22,17 +24,32 @@ import com.luismartingimeno.dogapi.scaffold.TopBar
 fun HomeScreen(
     auth: AuthManager,
     navigateToLogin: () -> Unit,
-    navigateToBreedDetail: (DogBreedItem) -> Unit,  // Ahora pasamos un objeto DogBreedItem
-    viewModel: BreedsViewModel = viewModel()
+    navigateToBreedDetail: (DogBreedItem) -> Unit,
+    navigateToFavorites: () -> Unit,
+    viewModel: BreedsViewModel = viewModel(),
+    firestoreManager: FirestoreManager
 ) {
     val lista by viewModel.breeds.observeAsState(emptyList())
     val progressBar by viewModel.progressBar.observeAsState(false)
+
+    var favoriteBreeds by remember { mutableStateOf<List<DogBreedItem>>(emptyList()) }
+
+    val logout = {
+        auth.signOut()
+        navigateToLogin()
+    }
+
+    val showFavorites = {
+        navigateToFavorites()
+    }
 
     Scaffold(
         topBar = {
             TopBar(
                 titulo = "TheDogApi",
-                navigateToLogin = navigateToLogin
+                navigateToLogin = navigateToLogin,
+                onShowFavorites = showFavorites,
+                onLogout = logout
             )
         }
     ) { padding ->
@@ -57,7 +74,8 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items(lista) { breed ->
+                    val breedsToDisplay = if (favoriteBreeds.isEmpty()) lista else favoriteBreeds
+                    items(breedsToDisplay) { breed ->
                         DogBreedCard(breed = breed, onClick = { navigateToBreedDetail(breed) })
                     }
                 }

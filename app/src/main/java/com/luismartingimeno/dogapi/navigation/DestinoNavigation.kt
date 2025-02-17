@@ -16,3 +16,6 @@ object Home
 
 @Serializable
 data class BreedDetail(val breedId: Int)
+
+@Serializable
+object FavoritesScreen

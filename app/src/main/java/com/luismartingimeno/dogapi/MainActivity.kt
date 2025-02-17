@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.remember
+import com.google.firebase.firestore.FirebaseFirestore
 import com.luismartingimeno.dogapi.data.AuthManager
 import com.luismartingimeno.dogapi.navigation.Navegacion
 import com.luismartingimeno.dogapi.ui.theme.TheDogApiTheme
@@ -19,7 +20,11 @@ class MainActivity : ComponentActivity() {
                 auth.resetAuthState()
                 auth.initializeGoogleSignIn(this)
                 auth.signOut()
-                Navegacion(auth)
+
+                // Inicializar Firestore
+                val firestore = remember { FirebaseFirestore.getInstance() }
+
+                Navegacion(auth, firestore) // Pasar Firestore a la navegación
             }
         }
     }

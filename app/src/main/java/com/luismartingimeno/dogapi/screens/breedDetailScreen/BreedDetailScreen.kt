@@ -16,19 +16,21 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import com.luismartingimeno.dogapi.data.firebase.FirestoreManager
 import com.luismartingimeno.dogapi.scaffold.TopBar
+import com.luismartingimeno.dogapi.screens.favoriteButton.FavoriteButton
 
 @Composable
 fun BreedDetailScreen(
     breedId: Int,
     viewModel: BreedDetailViewModel = viewModel(),
+    firestoreManager: FirestoreManager = FirestoreManager(),
     onBackClick: () -> Unit
 ) {
     val breedDetail by viewModel.breedDetail.observeAsState()
     val loading by viewModel.loading.observeAsState(false)
     val error by viewModel.error.observeAsState()
 
-    // Obtener detalles de la raza al cargar la pantalla
     LaunchedEffect(breedId) {
         viewModel.getBreedDetailById(breedId)
     }
@@ -37,18 +39,20 @@ fun BreedDetailScreen(
         topBar = {
             breedDetail?.let {
                 TopBar(
-                    titulo = it.name,
-                    navigateToLogin = onBackClick
+                    titulo = it.name ?: "Raza desconocida",
+                    navigateToLogin = onBackClick,
+                    onShowFavorites = {},
+                    onLogout = {},
+                    showFavoritesAndLogout = false
                 )
             }
         }
     ) { padding ->
-
         Box(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Brush.verticalGradient(listOf(Color(0xFFF5A623), Color(0xFFE7B142)))), // Fondo degradado
+                .background(Brush.verticalGradient(listOf(Color(0xFFF5A623), Color(0xFFE7B142)))),
             contentAlignment = Alignment.Center
         ) {
             if (loading == true) {
@@ -66,10 +70,9 @@ fun BreedDetailScreen(
                             .padding(16.dp)
                             .clip(RoundedCornerShape(24.dp))
                             .background(Color.White)
-                            .shadow(8.dp, RoundedCornerShape(24.dp)), // Sombras y bordes redondeados
+                            .shadow(8.dp, RoundedCornerShape(24.dp)),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // Mostrar la imagen de la raza
                         Image(
                             painter = rememberAsyncImagePainter("https://cdn2.thedogapi.com/images/${breed.reference_image_id}.jpg"),
                             contentDescription = "Imagen de ${breed.name}",
@@ -77,7 +80,7 @@ fun BreedDetailScreen(
                                 .size(250.dp)
                                 .clip(RoundedCornerShape(16.dp))
                                 .padding(8.dp)
-                                .shadow(4.dp, RoundedCornerShape(16.dp)) // Sombras para la imagen
+                                .shadow(4.dp, RoundedCornerShape(16.dp))
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -107,21 +110,14 @@ fun BreedDetailScreen(
                             color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.padding(8.dp)
                         )
-                        Text(
-                            text = "Historia: ${breed.history}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                        Text(
-                            text = "Origen: ${breed.origin}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.padding(8.dp)
-                        )
+
+                        // Botón de favorito
+                        FavoriteButton(breed, firestoreManager)
                     }
                 }
             }
         }
     }
+
 }
+
