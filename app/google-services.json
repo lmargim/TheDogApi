@@ -1,0 +1,92 @@
+{
+  "project_info": {
+    "project_number": "78909028472",
+    "project_id": "thedogapi-458d5",
+    "storage_bucket": "thedogapi-458d5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:78909028472:android:152b8c38b7b29b53e7958d",
+        "android_client_info": {
+          "package_name": "com.luismartingimeno.dogapi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "78909028472-2kegu1gqe5pmtir7v98ca0cpe5b6o7lg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.luismartingimeno.dogapi",
+            "certificate_hash": "5e6d4c8c781f7d072b87fc2bd785bd6876c5b28e"
+          }
+        },
+        {
+          "client_id": "78909028472-p1ursquqrmhj5ddt2tf6stoe727shkm6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-UeJL4p2QnzUYq0LchYaI_ytr_E1Evtw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "78909028472-p1ursquqrmhj5ddt2tf6stoe727shkm6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:78909028472:android:1d727bd88ef45bf7e7958d",
+        "android_client_info": {
+          "package_name": "com.luismartingimeno.thedogapi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "78909028472-cfcopgjpq9vlnrvd52mjsjgkd92k9qt8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.luismartingimeno.thedogapi",
+            "certificate_hash": "5e6d4c8c781f7d072b87fc2bd785bd6876c5b28e"
+          }
+        },
+        {
+          "client_id": "78909028472-va17468qc28p9f7j8u554l84frq7sa7t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.luismartingimeno.thedogapi",
+            "certificate_hash": "ac5c536b704752065de05f36d6fe326523405943"
+          }
+        },
+        {
+          "client_id": "78909028472-p1ursquqrmhj5ddt2tf6stoe727shkm6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-UeJL4p2QnzUYq0LchYaI_ytr_E1Evtw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "78909028472-p1ursquqrmhj5ddt2tf6stoe727shkm6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
