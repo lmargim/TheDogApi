@@ -8,12 +8,14 @@ import androidx.navigation.toRoute
 import com.google.firebase.firestore.FirebaseFirestore
 import com.luismartingimeno.dogapi.data.AuthManager
 import com.luismartingimeno.dogapi.data.firebase.FirestoreManager
+import com.luismartingimeno.dogapi.screens.addCustomFavorite.AddCustomFavoriteScreen
 import com.luismartingimeno.dogapi.screens.homeScreen.HomeScreen
 import com.luismartingimeno.dogapi.screens.loginScreen.LoginScreen
 import com.luismartingimeno.dogapi.screens.breedDetailScreen.BreedDetailScreen
 import com.luismartingimeno.dogapi.screens.forgotPasswordScreen.ForgotPasswordScreen
 import com.luismartingimeno.dogapi.screens.singUpScreen.SignUpScreen
 import com.luismartingimeno.dogapi.screens.favoritesScreen.FavoritesScreen // Importar la pantalla de favoritos
+import com.luismartingimeno.dogapi.screens.modifyCustomFavorite.ModifyCustomFavoriteScreen
 
 @Composable
 fun Navegacion(auth: AuthManager, firestore: FirebaseFirestore) {
@@ -97,7 +99,27 @@ fun Navegacion(auth: AuthManager, firestore: FirebaseFirestore) {
 
             FavoritesScreen(
                 firestoreManager = firestoreManager,
-                navigateBack = { navController.popBackStack() }
+                navigateBack = { navController.popBackStack() },
+                navigateToAddCustomFavorite = { navController.navigate(AddCustomFavoriteScreen)},
+                navigateToModifyCustomFavorites = { navController.navigate(ModifyCustomFavoriteScreen)}
+            )
+        }
+
+        // Pantalla de Añadir Favorito Personalizado
+        composable<AddCustomFavoriteScreen> {
+            val firestoreManager = FirestoreManager()
+            AddCustomFavoriteScreen(
+                firestoreManager = firestoreManager,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        // Pantalla de Modificar Favorito Personalizado
+        composable<ModifyCustomFavoriteScreen> {
+            val firestoreManager = FirestoreManager()
+            ModifyCustomFavoriteScreen(
+                firestoreManager = firestoreManager,
+                onBackClick = { navController.popBackStack() }
             )
         }
     }

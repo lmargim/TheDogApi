@@ -1,42 +1,41 @@
 package com.luismartingimeno.dogapi.screens.favoritesScreen
 
+import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import android.util.Log
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
-import com.luismartingimeno.dogapi.data.firebase.FirestoreManager
+import coil.compose.rememberImagePainter
 import com.luismartingimeno.dogapi.data.model.DogBreedItem
+import com.luismartingimeno.dogapi.data.firebase.FirestoreManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritesScreen(
     firestoreManager: FirestoreManager,
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    navigateToAddCustomFavorite: () -> Unit,
+    navigateToModifyCustomFavorites: () -> Unit
 ) {
     var favoriteBreeds by remember { mutableStateOf<List<DogBreedItem>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
-        try {
-            favoriteBreeds = firestoreManager.getFavorites()
-        } catch (e: Exception) {
-            Log.e("Firestore", "Error al obtener favoritos: ${e.message}")
-        } finally {
-            isLoading = false
-        }
+        favoriteBreeds = firestoreManager.getFavorites()
+        isLoading = false
     }
 
     Scaffold(
@@ -48,6 +47,21 @@ fun FavoritesScreen(
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back"
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = navigateToAddCustomFavorite) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add Custom Favorite"
+                        )
+                    }
+                    // Botón para modificar perros personalizados
+                    IconButton(onClick = navigateToModifyCustomFavorites) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Modify Custom Favorites"
                         )
                     }
                 }
@@ -77,43 +91,51 @@ fun DogBreedCard(breed: DogBreedItem) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .clip(RoundedCornerShape(16.dp)) // Bordes redondeados
-            .shadow(8.dp, RoundedCornerShape(16.dp)), // Sombra
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        shape = MaterialTheme.shapes.medium
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+        Column(
+            modifier = Modifier.padding(16.dp)
         ) {
-            // Imagen de la raza
-            Image(
-                painter = rememberAsyncImagePainter("https://cdn2.thedogapi.com/images/${breed.reference_image_id}.jpg"),
-                contentDescription = "Imagen de ${breed.name}",
+            // Mostrar imagen de la raza del perro (si está disponible)
+            val imageUrl = breed.reference_image_id // Asegúrate de que esta es la URL válida de la imagen
+
+            Box(
                 modifier = Modifier
-                    .size(80.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
-            )
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // Nombre de la raza
-            Column(
-                verticalArrangement = Arrangement.Center
+                    .fillMaxWidth()
+                    .height(200.dp) // Ajusta el tamaño de la imagen
             ) {
-                Text(
-                    text = breed.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = breed.breed_group ?: "Grupo desconocido",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                // Usar AsyncImage para cargar la imagen
+                Log.e("Image", imageUrl)
+                Image(
+                    painter = rememberAsyncImagePainter("https://cdn2.thedogapi.com/images/${imageUrl}.jpg"),
+                    contentDescription = "Imagen de ${breed.name}",
+                    modifier = Modifier
+                        .size(250.dp)
+                        .padding(8.dp)
                 )
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = breed.name,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+
+            Text(
+                text = "Grupo de raza: ${breed.breed_group}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Temperamento: ${breed.temperament}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
         }
     }
 }

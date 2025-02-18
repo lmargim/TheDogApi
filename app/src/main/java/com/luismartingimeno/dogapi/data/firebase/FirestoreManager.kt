@@ -41,4 +41,9 @@ class FirestoreManager {
             .delete()
             .await()
     }
+
+    // Método para agregar un perro personalizado
+    suspend fun addCustomFavorite(dog: DogBreedItem) {
+        addFavorite(dog)
+    }
 }
