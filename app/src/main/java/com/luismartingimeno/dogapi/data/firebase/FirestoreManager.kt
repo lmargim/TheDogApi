@@ -46,4 +46,10 @@ class FirestoreManager {
     suspend fun addCustomFavorite(dog: DogBreedItem) {
         addFavorite(dog)
     }
+
+    // Método para actualizar un favorito
+    suspend fun updateFavorite(updatedBreed: DogBreedItem) {
+        val docRef = firestore.collection("favorites").document(updatedBreed.id.toString())
+        docRef.set(updatedBreed) // Reemplaza los datos en Firestore
+    }
 }

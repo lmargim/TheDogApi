@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,6 +22,9 @@ import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.luismartingimeno.dogapi.data.model.DogBreedItem
 import com.luismartingimeno.dogapi.data.firebase.FirestoreManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,7 +83,13 @@ fun FavoritesScreen(
                     .padding(padding)
             ) {
                 items(favoriteBreeds) { breed ->
-                    DogBreedCard(breed = breed)
+                    DogBreedCard(
+                        breed = breed,
+                        firestoreManager = firestoreManager,
+                        onRemoveFavorite = { removedBreed ->
+                            favoriteBreeds = favoriteBreeds.filter { it.id != removedBreed.id }
+                        }
+                    )
                 }
             }
         }
@@ -87,7 +97,11 @@ fun FavoritesScreen(
 }
 
 @Composable
-fun DogBreedCard(breed: DogBreedItem) {
+fun DogBreedCard(
+    breed: DogBreedItem,
+    firestoreManager: FirestoreManager,
+    onRemoveFavorite: (DogBreedItem) -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -98,16 +112,15 @@ fun DogBreedCard(breed: DogBreedItem) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Mostrar imagen de la raza del perro (si está disponible)
-            val imageUrl = breed.reference_image_id // Asegúrate de que esta es la URL válida de la imagen
+            // Mostrar imagen de la raza del perro
+            val imageUrl = breed.reference_image_id
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp) // Ajusta el tamaño de la imagen
+                    .height(200.dp),
+                contentAlignment = Alignment.Center
             ) {
-                // Usar AsyncImage para cargar la imagen
-                Log.e("Image", imageUrl)
                 Image(
                     painter = rememberAsyncImagePainter("https://cdn2.thedogapi.com/images/${imageUrl}.jpg"),
                     contentDescription = "Imagen de ${breed.name}",
@@ -130,12 +143,37 @@ fun DogBreedCard(breed: DogBreedItem) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray
             )
+
             Spacer(modifier = Modifier.height(4.dp))
+
             Text(
                 text = "Temperamento: ${breed.temperament}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Botón para eliminar de favoritos
+            Button(
+                onClick = {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        firestoreManager.removeFavorite(breed.id)
+                    }
+                    onRemoveFavorite(breed) // Actualizar la lista en la UI
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Eliminar de favoritos",
+                    tint = Color.White
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = "Eliminar de favoritos", color = Color.White)
+            }
+
         }
     }
 }

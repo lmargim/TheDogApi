@@ -1,8 +1,6 @@
 package com.luismartingimeno.dogapi.screens.modifyCustomFavorite
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -11,8 +9,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.luismartingimeno.dogapi.data.EditFavoriteDialog.EditFavoriteDialog
 import com.luismartingimeno.dogapi.data.model.DogBreedItem
 import com.luismartingimeno.dogapi.data.firebase.FirestoreManager
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,10 +21,12 @@ fun ModifyCustomFavoriteScreen(
     onBackClick: () -> Unit
 ) {
     var customBreeds by remember { mutableStateOf<List<DogBreedItem>>(emptyList()) }
+    var selectedBreed by remember { mutableStateOf<DogBreedItem?>(null) }
+    val coroutineScope = rememberCoroutineScope()
 
-    // Función para obtener perros personalizados
+    // Obtener lista de perros personalizados
     LaunchedEffect(Unit) {
-        customBreeds = firestoreManager.getFavorites()  // Obtener lista de perros personalizados
+        customBreeds = firestoreManager.getFavorites()
     }
 
     Scaffold(
@@ -41,15 +43,32 @@ fun ModifyCustomFavoriteScreen(
     ) { padding ->
         LazyColumn(modifier = Modifier.padding(padding)) {
             items(customBreeds) { breed ->
-                // Aquí podrías agregar un botón para modificar el perro
-                DogBreedCard(breed, firestoreManager)
+                DogBreedCard(breed) { selectedBreed = breed }
             }
         }
     }
+
+    // Mostrar el diálogo de edición cuando hay un perro seleccionado
+    selectedBreed?.let { breed ->
+        EditFavoriteDialog(
+            breed = breed,
+            onDismiss = { selectedBreed = null },
+            onSave = { updatedBreed ->
+                coroutineScope.launch {
+                    // Actualizar Firestore y la UI local
+                    val updatedList = customBreeds.map { if (it.id == updatedBreed.id) updatedBreed else it }
+                    customBreeds = updatedList
+                    firestoreManager.updateFavorite(updatedBreed) // Ahora dentro de launch
+                    selectedBreed = null
+                }
+            }
+        )
+    }
+
 }
 
 @Composable
-fun DogBreedCard(breed: DogBreedItem, firestoreManager: FirestoreManager) {
+fun DogBreedCard(breed: DogBreedItem, onEditClick: (DogBreedItem) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -60,7 +79,11 @@ fun DogBreedCard(breed: DogBreedItem, firestoreManager: FirestoreManager) {
             modifier = Modifier.padding(8.dp)
         ) {
             Text(text = breed.name)
-            // Agregar más información si lo deseas, como editar, eliminar, etc.
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(onClick = { onEditClick(breed) }) {
+                Text("Editar")
+            }
         }
     }
 }
