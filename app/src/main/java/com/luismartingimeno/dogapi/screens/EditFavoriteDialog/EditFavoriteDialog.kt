@@ -1,4 +1,4 @@
-package com.luismartingimeno.dogapi.data.EditFavoriteDialog
+package com.luismartingimeno.dogapi.screens.EditFavoriteDialog
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import com.luismartingimeno.dogapi.data.model.DogBreedItem
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditFavoriteDialog(
     breed: DogBreedItem,
@@ -28,65 +27,53 @@ fun EditFavoriteDialog(
     onSave: (DogBreedItem) -> Unit
 ) {
     var name by remember { mutableStateOf(breed.name) }
-    var breedGroup by remember { mutableStateOf(breed.breed_group ?: "") }
-    var temperament by remember { mutableStateOf(breed.temperament ?: "") }
-    var lifeSpan by remember { mutableStateOf(breed.life_span ?: "") }
-    var referenceImageId by remember { mutableStateOf(breed.reference_image_id ?: "") }
-    val coroutineScope = rememberCoroutineScope()
+    var breedGroup by remember { mutableStateOf(breed.breed_group) }
+    var temperament by remember { mutableStateOf(breed.temperament) }
+    var lifeSpan by remember { mutableStateOf(breed.life_span) }
+    var referenceImageId by remember { mutableStateOf(breed.reference_image_id) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Editar Favorito") },
+        title = { Text("Editar Perro") },
         text = {
             Column {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Nombre") },
-                    modifier = Modifier.fillMaxWidth()
+                    label = { Text("Nombre") }
                 )
-                Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = breedGroup,
                     onValueChange = { breedGroup = it },
-                    label = { Text("Grupo de Raza") },
-                    modifier = Modifier.fillMaxWidth()
+                    label = { Text("Grupo de raza") }
                 )
-                Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = temperament,
                     onValueChange = { temperament = it },
-                    label = { Text("Temperamento") },
-                    modifier = Modifier.fillMaxWidth()
+                    label = { Text("Temperamento") }
                 )
-                Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = lifeSpan,
                     onValueChange = { lifeSpan = it },
-                    label = { Text("Esperanza de Vida") },
-                    modifier = Modifier.fillMaxWidth()
+                    label = { Text("Esperanza de vida") }
                 )
-                Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = referenceImageId,
                     onValueChange = { referenceImageId = it },
-                    label = { Text("URL de Imagen") },
-                    modifier = Modifier.fillMaxWidth()
+                    label = { Text("URL de la imagen") }
                 )
             }
         },
         confirmButton = {
             Button(onClick = {
-                coroutineScope.launch {
-                    val updatedBreed = breed.copy(
-                        name = name,
-                        breed_group = breedGroup,
-                        temperament = temperament,
-                        life_span = lifeSpan,
-                        reference_image_id = referenceImageId
-                    )
-                    onSave(updatedBreed)
-                }
+                val updatedBreed = breed.copy(
+                    name = name,
+                    breed_group = breedGroup,
+                    temperament = temperament,
+                    life_span = lifeSpan,
+                    reference_image_id = referenceImageId
+                )
+                onSave(updatedBreed)
             }) {
                 Text("Guardar")
             }

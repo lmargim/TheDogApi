@@ -12,33 +12,39 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import com.luismartingimeno.dogapi.data.model.DogBreedItem
-import com.luismartingimeno.dogapi.data.firebase.FirestoreManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.luismartingimeno.dogapi.screens.EditFavoriteDialog.EditFavoriteDialog
+import com.luismartingimeno.dogapi.ui.FirestoreViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritesScreen(
-    firestoreManager: FirestoreManager,
+    viewModel: FirestoreViewModel,
     navigateBack: () -> Unit,
     navigateToAddCustomFavorite: () -> Unit,
-    navigateToModifyCustomFavorites: () -> Unit
-) {
+    navigateToModifyCustomFavorites: () -> Unit,
+
+    ) {
     var favoriteBreeds by remember { mutableStateOf<List<DogBreedItem>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
 
+    // Observar la lista de favoritos desde el ViewModel
+    val favorites by viewModel.favorites.observeAsState(emptyList())
+
+    // Cargar los favoritos cuando la pantalla se inicie
     LaunchedEffect(Unit) {
-        favoriteBreeds = firestoreManager.getFavorites()
+        viewModel.getFavorites()
+    }
+
+    // Actualizar favoriteBreeds cuando la lista de favoritos cambie
+    LaunchedEffect(favorites) {
+        favoriteBreeds = favorites
         isLoading = false
     }
 
@@ -61,13 +67,6 @@ fun FavoritesScreen(
                             contentDescription = "Add Custom Favorite"
                         )
                     }
-                    // Botón para modificar perros personalizados
-                    IconButton(onClick = navigateToModifyCustomFavorites) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Modify Custom Favorites"
-                        )
-                    }
                 }
             )
         }
@@ -85,7 +84,7 @@ fun FavoritesScreen(
                 items(favoriteBreeds) { breed ->
                     DogBreedCard(
                         breed = breed,
-                        firestoreManager = firestoreManager,
+                        viewModel = viewModel,
                         onRemoveFavorite = { removedBreed ->
                             favoriteBreeds = favoriteBreeds.filter { it.id != removedBreed.id }
                         }
@@ -99,9 +98,11 @@ fun FavoritesScreen(
 @Composable
 fun DogBreedCard(
     breed: DogBreedItem,
-    firestoreManager: FirestoreManager,
+    viewModel: FirestoreViewModel,
     onRemoveFavorite: (DogBreedItem) -> Unit
 ) {
+    var showEditDialog by remember { mutableStateOf(false) } // Estado para controlar el diálogo
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -113,8 +114,11 @@ fun DogBreedCard(
             modifier = Modifier.padding(16.dp)
         ) {
             // Mostrar imagen de la raza del perro
-            val imageUrl = breed.reference_image_id
-
+            val imageUrl = if (breed.reference_image_id.startsWith("http")) {
+                breed.reference_image_id
+            } else {
+                "https://cdn2.thedogapi.com/images/${breed.reference_image_id}.jpg"
+            }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -122,11 +126,8 @@ fun DogBreedCard(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = rememberAsyncImagePainter("https://cdn2.thedogapi.com/images/${imageUrl}.jpg"),
+                    painter = rememberAsyncImagePainter(imageUrl),
                     contentDescription = "Imagen de ${breed.name}",
-                    modifier = Modifier
-                        .size(250.dp)
-                        .padding(8.dp)
                 )
             }
 
@@ -157,9 +158,7 @@ fun DogBreedCard(
             // Botón para eliminar de favoritos
             Button(
                 onClick = {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        firestoreManager.removeFavorite(breed.id)
-                    }
+                    viewModel.removeFavorite(breed.id)
                     onRemoveFavorite(breed) // Actualizar la lista en la UI
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
@@ -174,6 +173,34 @@ fun DogBreedCard(
                 Text(text = "Eliminar de favoritos", color = Color.White)
             }
 
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Botón para editar el perro
+            Button(
+                onClick = { showEditDialog = true }, // Abrir el diálogo de edición
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Editar perro",
+                    tint = Color.White
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = "Editar", color = Color.White)
+            }
         }
+    }
+
+    // Mostrar el diálogo de edición cuando showEditDialog es true
+    if (showEditDialog) {
+        EditFavoriteDialog(
+            breed = breed,
+            onDismiss = { showEditDialog = false }, // Cerrar el diálogo
+            onSave = { updatedBreed ->
+                // Actualizar el favorito en Firestore
+                viewModel.updateFavorite(updatedBreed)
+                showEditDialog = false // Cerrar el diálogo después de guardar
+            }
+        )
     }
 }

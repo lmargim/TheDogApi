@@ -8,15 +8,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.luismartingimeno.dogapi.data.firebase.FirestoreManager
 import com.luismartingimeno.dogapi.data.model.DogBreedItem
+import com.luismartingimeno.dogapi.ui.FirestoreViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddCustomFavoriteScreen(
-    firestoreManager: FirestoreManager,
+    viewModel: FirestoreViewModel,
     onBackClick: () -> Unit
+
 ) {
     var name by remember { mutableStateOf("") }
     var breedGroup by remember { mutableStateOf("") }
@@ -24,7 +25,6 @@ fun AddCustomFavoriteScreen(
     var lifeSpan by remember { mutableStateOf("") }
     var reference_image_id by remember { mutableStateOf("") }
 
-    // Crear un scope de coroutines para lanzar la función suspendida
     val coroutineScope = rememberCoroutineScope()
 
     // Función para guardar el perro personalizado
@@ -37,7 +37,7 @@ fun AddCustomFavoriteScreen(
                 life_span = lifeSpan,
                 reference_image_id = reference_image_id
             )
-            firestoreManager.addCustomFavorite(dogBreed)
+            viewModel.addCustomFavorite(dogBreed)
             onBackClick()
         }
     }

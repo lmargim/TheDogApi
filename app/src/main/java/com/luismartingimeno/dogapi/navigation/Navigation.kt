@@ -5,7 +5,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.google.firebase.firestore.FirebaseFirestore
 import com.luismartingimeno.dogapi.data.AuthManager
 import com.luismartingimeno.dogapi.data.firebase.FirestoreManager
 import com.luismartingimeno.dogapi.screens.addCustomFavorite.AddCustomFavoriteScreen
@@ -14,11 +13,11 @@ import com.luismartingimeno.dogapi.screens.loginScreen.LoginScreen
 import com.luismartingimeno.dogapi.screens.breedDetailScreen.BreedDetailScreen
 import com.luismartingimeno.dogapi.screens.forgotPasswordScreen.ForgotPasswordScreen
 import com.luismartingimeno.dogapi.screens.singUpScreen.SignUpScreen
-import com.luismartingimeno.dogapi.screens.favoritesScreen.FavoritesScreen // Importar la pantalla de favoritos
-import com.luismartingimeno.dogapi.screens.modifyCustomFavorite.ModifyCustomFavoriteScreen
+import com.luismartingimeno.dogapi.screens.favoritesScreen.FavoritesScreen
+import com.luismartingimeno.dogapi.ui.FirestoreViewModel
 
 @Composable
-fun Navegacion(auth: AuthManager, firestore: FirebaseFirestore) {
+fun Navegacion(auth: AuthManager, viewModel: FirestoreViewModel) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Login) {
@@ -87,7 +86,8 @@ fun Navegacion(auth: AuthManager, firestore: FirebaseFirestore) {
         composable<BreedDetail> { backStackEntry ->
             val breedId = backStackEntry.toRoute<BreedDetail>().breedId
             BreedDetailScreen(
-                breedId = breedId
+                viewModel,
+                breedId = breedId,
             ) {
                 navController.popBackStack()
             }
@@ -98,10 +98,14 @@ fun Navegacion(auth: AuthManager, firestore: FirebaseFirestore) {
             val firestoreManager = FirestoreManager()
 
             FavoritesScreen(
-                firestoreManager = firestoreManager,
+                viewModel,
                 navigateBack = { navController.popBackStack() },
-                navigateToAddCustomFavorite = { navController.navigate(AddCustomFavoriteScreen)},
-                navigateToModifyCustomFavorites = { navController.navigate(ModifyCustomFavoriteScreen)}
+                navigateToAddCustomFavorite = { navController.navigate(AddCustomFavoriteScreen) },
+                navigateToModifyCustomFavorites = {
+                    navController.navigate(
+                        ModifyCustomFavoriteScreen
+                    )
+                }
             )
         }
 
@@ -109,16 +113,7 @@ fun Navegacion(auth: AuthManager, firestore: FirebaseFirestore) {
         composable<AddCustomFavoriteScreen> {
             val firestoreManager = FirestoreManager()
             AddCustomFavoriteScreen(
-                firestoreManager = firestoreManager,
-                onBackClick = { navController.popBackStack() }
-            )
-        }
-
-        // Pantalla de Modificar Favorito Personalizado
-        composable<ModifyCustomFavoriteScreen> {
-            val firestoreManager = FirestoreManager()
-            ModifyCustomFavoriteScreen(
-                firestoreManager = firestoreManager,
+                viewModel,
                 onBackClick = { navController.popBackStack() }
             )
         }

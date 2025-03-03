@@ -19,12 +19,13 @@ import coil.compose.rememberAsyncImagePainter
 import com.luismartingimeno.dogapi.data.firebase.FirestoreManager
 import com.luismartingimeno.dogapi.scaffold.TopBar
 import com.luismartingimeno.dogapi.screens.favoriteButton.FavoriteButton
+import com.luismartingimeno.dogapi.ui.FirestoreViewModel
 
 @Composable
 fun BreedDetailScreen(
+    firestoreViewModel: FirestoreViewModel,
     breedId: Int,
     viewModel: BreedDetailViewModel = viewModel(),
-    firestoreManager: FirestoreManager = FirestoreManager(),
     onBackClick: () -> Unit
 ) {
     val breedDetail by viewModel.breedDetail.observeAsState()
@@ -112,7 +113,7 @@ fun BreedDetailScreen(
                         )
 
                         // Botón de favorito
-                        FavoriteButton(breed, firestoreManager)
+                        FavoriteButton(breed, firestoreViewModel)
                     }
                 }
             }
