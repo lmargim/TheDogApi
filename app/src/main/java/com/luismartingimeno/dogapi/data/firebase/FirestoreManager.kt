@@ -44,7 +44,12 @@ class FirestoreManager {
 
     // Método para agregar un perro personalizado
     suspend fun addCustomFavorite(dog: DogBreedItem) {
-        addFavorite(dog)
+        val userId = getUserId() ?: return
+        firestore.collection("users")
+            .document(userId)
+            .collection("favorites")
+            .add(dog)
+            .await()
     }
 
     // Método para actualizar un favorito
